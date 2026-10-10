@@ -164,10 +164,9 @@ html.light {
 html.light .theme-toggle .icon-moon { display: none; }
 html.light .theme-toggle .icon-sun  { display: block; }
 
-/* ── CURSOR COLORS ── */
-html.light #gc-cursor { background: #000000; }
-html.light #gc-ring   { border-color: #000000; }
-html.light #gc-p1, html.light #gc-p2 { background: #000000; }
+/* ── GESTURE LOTTIE: LIGHT MODE ── */
+html.light #gc-lottie .gc-fill path   { fill: #000; }
+html.light #gc-lottie .gc-stroke path { stroke: #000; }
 
 .website-content {
   font-family: 'Google Sans', 'Segoe UI', sans-serif;
@@ -1380,38 +1379,6 @@ html.light .kb-win-btn {
 
 
 
-            /* All cursor elements use absolute + transform:translate(-50%,-50%) for consistent centering */
-            #gc-cursor {
-              width: 0; height: 0;
-              border-radius: 50%;
-              background: #ffffff;
-              position: absolute;
-              top: 50%; left: 50%;
-              transform: translate(-50%, -50%);
-              transition: width .25s ease, height .25s ease, top .55s ease, left .55s ease;
-              will-change: width, height, top, left;
-            }
-            #gc-ring {
-              width: 110px; height: 110px;
-              border-radius: 50%;
-              border: 6px solid #ffffff;
-              position: absolute;
-              top: 50%; left: 50%;
-              transform: translate(-50%, -50%);
-              opacity: 0;
-              transition: opacity .25s;
-              pointer-events: none;
-            }
-            #gc-p1, #gc-p2 {
-              width: 60px; height: 60px;
-              border-radius: 50%;
-              background: #ffffff;
-              opacity: 0;
-              position: absolute;
-              top: 50%; left: 50%;
-              transform: translate(-50%, -50%);
-              transition: top .7s ease-in-out, left .7s ease-in-out, opacity .2s;
-            }
             #gc-phase-label {
               position: absolute; bottom: 14px; left: 0; right: 0;
               text-align: center; font-size: 0.68rem; font-weight: 700;
@@ -1858,54 +1825,7 @@ html.light .kb-win-btn {
       <div class="feat-gallery">
         <div class="gallery-display" style="display:flex;align-items:center;justify-content:center;min-height:220px;position:relative;overflow:hidden;">
 
-          <style>
-            /* All cursor elements use absolute + transform:translate(-50%,-50%) for consistent centering */
-            #gc-cursor {
-              width: 0; height: 0;
-              border-radius: 50%;
-              background: #ffffff;
-              position: absolute;
-              top: 50%; left: 50%;
-              transform: translate(-50%, -50%);
-              transition: width .25s ease, height .25s ease, top .55s ease, left .55s ease;
-              will-change: width, height, top, left;
-            }
-            #gc-ring {
-              width: 110px; height: 110px;
-              border-radius: 50%;
-              border: 6px solid #ffffff;
-              position: absolute;
-              top: 50%; left: 50%;
-              transform: translate(-50%, -50%);
-              opacity: 0;
-              transition: opacity .25s;
-              pointer-events: none;
-            }
-            #gc-p1, #gc-p2 {
-              width: 60px; height: 60px;
-              border-radius: 50%;
-              background: #ffffff;
-              opacity: 0;
-              position: absolute;
-              top: 50%; left: 50%;
-              transform: translate(-50%, -50%);
-              transition: top .7s ease-in-out, left .7s ease-in-out, opacity .2s;
-            }
-            #gc-phase-label {
-              position: absolute; bottom: 14px; left: 0; right: 0;
-              text-align: center; font-size: 0.68rem; font-weight: 700;
-              color: var(--text-secondary); letter-spacing: .1em; text-transform: uppercase;
-              pointer-events: none;
-            }
-          </style>
-
-          <!-- Unified scene: both cursor and pinch dots live in the same container -->
-          <div id="gc-scene" style="position:absolute;inset:0;">
-            <div id="gc-ring"></div>
-            <div id="gc-cursor"></div>
-            <div id="gc-p1"></div>
-            <div id="gc-p2"></div>
-          </div>
+          <div id="gc-lottie" style="position:absolute;inset:0;"></div>
 
           <div id="gc-phase-label">TAP &amp; MOVE</div>
 
@@ -2604,178 +2524,6 @@ html.light .kb-win-btn {
       })();
 
 (function(){
-            var cursor = document.getElementById('gc-cursor');
-            var ring   = document.getElementById('gc-ring');
-            var p1     = document.getElementById('gc-p1');
-            var p2     = document.getElementById('gc-p2');
-            var lbl    = document.getElementById('gc-phase-label');
-            var container = document.getElementById('gc-scene').parentElement;
-
-            var phase = 0;
-            var timers = [];
-
-            function after(ms, fn) { timers.push(setTimeout(fn, ms)); }
-
-            function clearAll() { timers.forEach(clearTimeout); timers = []; }
-
-            /* Set cursor size — position is always top/left % inside the gallery-display */
-            function cursorTo(size, topPct, leftPct, transition) {
-              cursor.style.transition = transition !== undefined
-                ? transition
-                : 'width .25s ease, height .25s ease, top .55s ease, left .55s ease';
-              cursor.style.width  = size + 'px';
-              cursor.style.height = size + 'px';
-              cursor.style.top    = topPct  + '%';
-              cursor.style.left   = leftPct + '%';
-            }
-
-            function hideCursor(instant) {
-              cursor.style.transition = instant ? 'none' : 'width .15s ease-in, height .15s ease-in';
-              cursor.style.width  = '0px';
-              cursor.style.height = '0px';
-            }
-
-            /* ── Phase 0: TAP & MOVE ── */
-            function runMove() {
-              lbl.textContent = 'TAP & MOVE';
-              ring.style.opacity = '0';
-              p1.style.opacity = '0';
-              p2.style.opacity = '0';
-
-              // Start invisible at center
-              cursorTo(0, 50, 50, 'none');
-
-              // Pop in
-              after(80, function(){
-                cursorTo(60, 50, 50, 'width .2s ease-out, height .2s ease-out');
-              });
-
-              // Move sequence: [topPct, leftPct]
-              var waypoints = [[30, 68], [65, 28], [55, 60], [50, 50]];
-              var mi = 0;
-              function doMove() {
-                if (mi >= waypoints.length) {
-                  after(150, function(){
-                    hideCursor(false);
-                    after(250, nextPhase);
-                  });
-                  return;
-                }
-                cursor.style.transition = 'width .2s, height .2s, top .6s ease, left .6s ease';
-                cursor.style.top  = waypoints[mi][0] + '%';
-                cursor.style.left = waypoints[mi][1] + '%';
-                mi++;
-                after(700, doMove);
-              }
-              after(450, doMove);
-            }
-
-            /* ── Phase 1: LONG PRESS ── */
-            function runHold() {
-              lbl.textContent = 'LONG PRESS';
-              p1.style.opacity = '0';
-              p2.style.opacity = '0';
-
-              // Cursor invisible at center
-              cursorTo(0, 50, 50, 'none');
-              ring.style.transition = 'none';
-              ring.style.opacity = '0';
-
-              after(300, function(){
-                // Ring appears
-                ring.style.transition = 'opacity .1s';
-                ring.style.opacity = '1';
-                // Cursor inflates
-                after(30, function(){
-                  cursor.style.transition = 'width 1s ease-out, height 1s ease-out';
-                  cursor.style.width  = '102px';
-                  cursor.style.height = '102px';
-                });
-              });
-
-              // Shrink cursor and fade ring simultaneously
-              after(1450, function(){
-                cursor.style.transition = 'width .35s ease-in, height .35s ease-in';
-                cursor.style.width  = '0px';
-                cursor.style.height = '0px';
-                ring.style.transition = 'opacity .35s';
-                ring.style.opacity = '0';
-              });
-
-              // Next phase after both have disappeared
-              after(1850, function(){
-                after(800, nextPhase);
-              });
-            }
-
-            /* ── Phase 2: PINCH TO ZOOM ── */
-            function runPinch() {
-              lbl.textContent = 'PINCH TO ZOOM';
-              ring.style.opacity = '0';
-              hideCursor(true);
-
-              // Both fingers start at center, invisible
-              p1.style.transition = 'none'; p2.style.transition = 'none';
-              p1.style.top = '50%'; p1.style.left = '50%';
-              p2.style.top = '50%'; p2.style.left = '50%';
-              p1.style.opacity = '0'; p2.style.opacity = '0';
-
-              // Fade in
-              after(200, function(){
-                p1.style.transition = 'opacity .2s';
-                p2.style.transition = 'opacity .2s';
-                p1.style.opacity = '1';
-                p2.style.opacity = '1';
-              });
-
-              // Spread = zoom in
-              after(450, function(){
-                var t = 'left .7s ease-in-out, top .7s ease-in-out, opacity .2s';
-                p1.style.transition = t; p2.style.transition = t;
-                p1.style.left = '22%'; p2.style.left = '78%';
-              });
-
-              // Pinch = zoom out
-              after(1300, function(){
-                p1.style.left = '50%'; p2.style.left = '50%';
-              });
-
-              // Spread again = zoom in
-              after(2100, function(){
-                p1.style.left = '22%'; p2.style.left = '78%';
-              });
-
-              // Fade out
-              after(2900, function(){
-                p1.style.transition = 'opacity .2s, left .7s ease-in-out, top .7s ease-in-out';
-                p2.style.transition = 'opacity .2s, left .7s ease-in-out, top .7s ease-in-out';
-                p1.style.opacity = '0'; p2.style.opacity = '0';
-                after(300, nextPhase);
-              });
-            }
-
-            function nextPhase() {
-              clearAll();
-              phase = (phase + 1) % 3;
-              if      (phase === 0) runMove();
-              else if (phase === 1) runHold();
-              else                  runPinch();
-            }
-
-            /* ── Start only when visible (IntersectionObserver) ── */
-            var started = false;
-            var observer = new IntersectionObserver(function(entries) {
-              entries.forEach(function(entry) {
-                if (entry.isIntersecting && !started) {
-                  started = true;
-                  after(400, runMove);
-                }
-              });
-            }, { threshold: 0.4 });
-            observer.observe(container);
-          })();
-
-(function(){
             var out = document.getElementById('kb-output');
             var keyEls = document.querySelectorAll('#kb-keys [data-k]');
             var keyMap = {};
@@ -3205,5 +2953,26 @@ a.innerHTML = '<img src="https://upload.wikimedia.org/wikipedia/commons/f/f1/Ico
   }
 })();
     </script>
+<script src="https://cdn.jsdelivr.net/npm/lottie-web@5.12.2/build/player/lottie_light.min.js"></script>
+<script>
+(function () {
+  var GC_DATA = {"v":"5.7.0","fr":60,"ip":0,"op":570,"w":512,"h":416,"nm":"Trackpad gestures","ddd":0,"assets":[],"layers":[{"ddd":0,"ind":1,"ty":4,"nm":"pinch-2","cl":"gc-fill","sr":1,"ks":{"o":{"a":1,"k":[{"t":0,"s":[0],"h":1},{"t":390.0,"s":[0],"o":{"x":[0.25],"y":[0.1]},"i":{"x":[0.25],"y":[1]}},{"t":402.0,"s":[100],"h":1},{"t":552.0,"s":[100],"o":{"x":[0.25],"y":[0.1]},"i":{"x":[0.25],"y":[1]}},{"t":564.0,"s":[0],"h":1},{"t":570,"s":[0]}]},"r":{"a":0,"k":0},"p":{"a":1,"k":[{"t":0,"s":[256.0,208.0],"h":1},{"t":405.0,"s":[256.0,208.0],"o":{"x":[0.42],"y":[0]},"i":{"x":[0.58],"y":[1]},"to":[0,0],"ti":[0,0]},{"t":447.0,"s":[399.36,208.0],"h":1},{"t":456.0,"s":[399.36,208.0],"o":{"x":[0.42],"y":[0]},"i":{"x":[0.58],"y":[1]},"to":[0,0],"ti":[0,0]},{"t":498.0,"s":[256.0,208.0],"h":1},{"t":504.0,"s":[256.0,208.0],"o":{"x":[0.42],"y":[0]},"i":{"x":[0.58],"y":[1]},"to":[0,0],"ti":[0,0]},{"t":546.0,"s":[399.36,208.0],"h":1},{"t":570,"s":[399.36,208.0]}]},"a":{"a":0,"k":[0,0,0]},"s":{"a":0,"k":[100,100,100]}},"ao":0,"shapes":[{"ty":"gr","it":[{"ty":"el","d":1,"s":{"a":0,"k":[60,60]},"p":{"a":0,"k":[0,0]},"nm":"Ellipse"},{"ty":"fl","c":{"a":0,"k":[1,1,1,1]},"o":{"a":0,"k":100},"r":1,"bm":0,"nm":"Fill"},{"ty":"tr","p":{"a":0,"k":[0,0]},"a":{"a":0,"k":[0,0]},"s":{"a":0,"k":[100,100]},"r":{"a":0,"k":0},"o":{"a":0,"k":100},"sk":{"a":0,"k":0},"sa":{"a":0,"k":0}}],"nm":"Group"}],"ip":0,"op":570,"st":0,"bm":0},{"ddd":0,"ind":2,"ty":4,"nm":"pinch-1","cl":"gc-fill","sr":1,"ks":{"o":{"a":1,"k":[{"t":0,"s":[0],"h":1},{"t":390.0,"s":[0],"o":{"x":[0.25],"y":[0.1]},"i":{"x":[0.25],"y":[1]}},{"t":402.0,"s":[100],"h":1},{"t":552.0,"s":[100],"o":{"x":[0.25],"y":[0.1]},"i":{"x":[0.25],"y":[1]}},{"t":564.0,"s":[0],"h":1},{"t":570,"s":[0]}]},"r":{"a":0,"k":0},"p":{"a":1,"k":[{"t":0,"s":[256.0,208.0],"h":1},{"t":405.0,"s":[256.0,208.0],"o":{"x":[0.42],"y":[0]},"i":{"x":[0.58],"y":[1]},"to":[0,0],"ti":[0,0]},{"t":447.0,"s":[112.64,208.0],"h":1},{"t":456.0,"s":[112.64,208.0],"o":{"x":[0.42],"y":[0]},"i":{"x":[0.58],"y":[1]},"to":[0,0],"ti":[0,0]},{"t":498.0,"s":[256.0,208.0],"h":1},{"t":504.0,"s":[256.0,208.0],"o":{"x":[0.42],"y":[0]},"i":{"x":[0.58],"y":[1]},"to":[0,0],"ti":[0,0]},{"t":546.0,"s":[112.64,208.0],"h":1},{"t":570,"s":[112.64,208.0]}]},"a":{"a":0,"k":[0,0,0]},"s":{"a":0,"k":[100,100,100]}},"ao":0,"shapes":[{"ty":"gr","it":[{"ty":"el","d":1,"s":{"a":0,"k":[60,60]},"p":{"a":0,"k":[0,0]},"nm":"Ellipse"},{"ty":"fl","c":{"a":0,"k":[1,1,1,1]},"o":{"a":0,"k":100},"r":1,"bm":0,"nm":"Fill"},{"ty":"tr","p":{"a":0,"k":[0,0]},"a":{"a":0,"k":[0,0]},"s":{"a":0,"k":[100,100]},"r":{"a":0,"k":0},"o":{"a":0,"k":100},"sk":{"a":0,"k":0},"sa":{"a":0,"k":0}}],"nm":"Group"}],"ip":0,"op":570,"st":0,"bm":0},{"ddd":0,"ind":3,"ty":4,"nm":"cursor","cl":"gc-fill","sr":1,"ks":{"o":{"a":0,"k":100},"r":{"a":0,"k":0},"p":{"a":1,"k":[{"t":0,"s":[256.0,208.0],"h":1},{"t":27.0,"s":[256.0,208.0],"o":{"x":[0.25],"y":[0.1]},"i":{"x":[0.25],"y":[1]},"to":[0,0],"ti":[0,0]},{"t":63.0,"s":[348.16,124.8],"h":1},{"t":69.0,"s":[348.16,124.8],"o":{"x":[0.25],"y":[0.1]},"i":{"x":[0.25],"y":[1]},"to":[0,0],"ti":[0,0]},{"t":105.0,"s":[143.36,270.4],"h":1},{"t":111.0,"s":[143.36,270.4],"o":{"x":[0.25],"y":[0.1]},"i":{"x":[0.25],"y":[1]},"to":[0,0],"ti":[0,0]},{"t":147.0,"s":[307.2,228.8],"h":1},{"t":153.0,"s":[307.2,228.8],"o":{"x":[0.25],"y":[0.1]},"i":{"x":[0.25],"y":[1]},"to":[0,0],"ti":[0,0]},{"t":189.0,"s":[256.0,208.0],"h":1},{"t":570,"s":[256.0,208.0]}]},"a":{"a":0,"k":[0,0,0]},"s":{"a":0,"k":[100,100,100]}},"ao":0,"shapes":[{"ty":"gr","it":[{"ty":"el","d":1,"s":{"a":1,"k":[{"t":0,"s":[0,0],"h":1},{"t":4.8,"s":[0,0],"o":{"x":[0],"y":[0]},"i":{"x":[0.58],"y":[1]}},{"t":16.8,"s":[60,60],"h":1},{"t":204.0,"s":[60,60],"o":{"x":[0.42],"y":[0]},"i":{"x":[1],"y":[1]}},{"t":213.0,"s":[0,0],"h":1},{"t":238.8,"s":[0,0],"o":{"x":[0],"y":[0]},"i":{"x":[0.58],"y":[1]}},{"t":298.8,"s":[102,102],"h":1},{"t":306.0,"s":[102,102],"o":{"x":[0.42],"y":[0]},"i":{"x":[1],"y":[1]}},{"t":327.0,"s":[0,0],"h":1},{"t":570,"s":[0,0]}]},"p":{"a":0,"k":[0,0]},"nm":"Ellipse"},{"ty":"fl","c":{"a":0,"k":[1,1,1,1]},"o":{"a":0,"k":100},"r":1,"bm":0,"nm":"Fill"},{"ty":"tr","p":{"a":0,"k":[0,0]},"a":{"a":0,"k":[0,0]},"s":{"a":0,"k":[100,100]},"r":{"a":0,"k":0},"o":{"a":0,"k":100},"sk":{"a":0,"k":0},"sa":{"a":0,"k":0}}],"nm":"Group"}],"ip":0,"op":570,"st":0,"bm":0},{"ddd":0,"ind":4,"ty":4,"nm":"ring","cl":"gc-stroke","sr":1,"ks":{"o":{"a":1,"k":[{"t":0,"s":[0],"h":1},{"t":237.0,"s":[0],"o":{"x":[0.25],"y":[0.1]},"i":{"x":[0.25],"y":[1]}},{"t":243.0,"s":[100],"h":1},{"t":306.0,"s":[100],"o":{"x":[0.25],"y":[0.1]},"i":{"x":[0.25],"y":[1]}},{"t":327.0,"s":[0],"h":1},{"t":570,"s":[0]}]},"r":{"a":0,"k":0},"p":{"a":0,"k":[256.0,208.0]},"a":{"a":0,"k":[0,0,0]},"s":{"a":0,"k":[100,100,100]}},"ao":0,"shapes":[{"ty":"gr","it":[{"ty":"el","d":1,"s":{"a":0,"k":[104,104]},"p":{"a":0,"k":[0,0]},"nm":"Ellipse"},{"ty":"st","c":{"a":0,"k":[1,1,1,1]},"o":{"a":0,"k":100},"w":{"a":0,"k":6},"lc":1,"lj":1,"ml":4,"bm":0,"nm":"Stroke"},{"ty":"tr","p":{"a":0,"k":[0,0]},"a":{"a":0,"k":[0,0]},"s":{"a":0,"k":[100,100]},"r":{"a":0,"k":0},"o":{"a":0,"k":100},"sk":{"a":0,"k":0},"sa":{"a":0,"k":0}}],"nm":"Group"}],"ip":0,"op":570,"st":0,"bm":0}],"markers":[{"tm":0,"cm":"TAP & MOVE","dr":0},{"tm":219.0,"cm":"LONG PRESS","dr":0},{"tm":378.0,"cm":"PINCH TO ZOOM","dr":0}]};
+  var box = document.getElementById('gc-lottie'), lbl = document.getElementById('gc-phase-label');
+  var anim = lottie.loadAnimation({ container: box, renderer: 'svg', loop: true, autoplay: false, animationData: GC_DATA });
+  var phases = [[378, 'PINCH TO ZOOM'], [219, 'LONG PRESS'], [0, 'TAP & MOVE']], current = '';
+  anim.addEventListener('enterFrame', function (e) {
+    var name = phases.find(function (p) { return e.currentTime >= p[0]; })[1];
+    if (name !== current) lbl.textContent = current = name;
+  });
+  var started = false;
+  new IntersectionObserver(function (entries) {
+    entries.forEach(function (en) {
+      if (!en.isIntersecting) return anim.pause();
+      if (started) return anim.play();
+      started = true; setTimeout(function () { anim.play(); }, 400);
+    });
+  }, { threshold: 0.4 }).observe(box.parentElement);
+})();
+</script>
 </body>
 </html>
