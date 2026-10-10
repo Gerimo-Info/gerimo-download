@@ -1642,172 +1642,15 @@ html.light .kb-win-btn {
       </div>
       <div class="feat-gallery">
         <div class="gallery-display" style="display:flex;align-items:center;justify-content:center;position:relative;">
-          <style>
-            #conn-cable-path { stroke-dasharray: 260; stroke-dashoffset: 260; animation: none; }
-
-            /* BT draw-on */
-            .conn-bt-path {
-              stroke-dasharray: 500;
-              stroke-dashoffset: 500;
-              animation: connDrawBT 2.5s ease forwards;
-            }
-            @keyframes connDrawBT {
-              0%   { stroke-dashoffset: 500; opacity: 1; }
-              60%  { stroke-dashoffset: 0; opacity: 1; }
-              90%  { stroke-dashoffset: 0; opacity: 1; }
-              100% { stroke-dashoffset: 0; opacity: 0; }
-            }
-
-            /* WiFi draw-on */
-            .conn-wifi-arc {
-              stroke-dasharray: 300;
-              stroke-dashoffset: 300;
-              animation: connDrawWifi 2.5s ease forwards;
-            }
-            .conn-wifi-arc:nth-child(2) { animation-delay: 0.2s; }
-            .conn-wifi-arc:nth-child(3) { animation-delay: 0.4s; }
-            @keyframes connDrawWifi {
-              0%   { stroke-dashoffset: 300; opacity: 1; }
-              60%  { stroke-dashoffset: 0; opacity: 1; }
-              90%  { stroke-dashoffset: 0; opacity: 1; }
-              100% { stroke-dashoffset: 0; opacity: 0; }
-            }
-            .conn-wifi-dot { animation: connFadeInOut 2.5s ease forwards; }
-            @keyframes connFadeInOut {
-              0%   { opacity: 0; }
-              10%  { opacity: 1; }
-              90%  { opacity: 1; }
-              100% { opacity: 0; }
-            }
-
-            #conn-scene-bt   { display:none; }
-            #conn-scene-wifi { display:none; }
-          </style>
-
-          <!-- USB cable scene -->
-          <svg id="conn-svg" style="width:70%;max-width:380px;height:auto;display:block;" viewBox="0 0 300 160">
-            <path id="conn-cable-path" d="M60,80 C100,80 200,80 240,80" fill="none" stroke="#ea4335" stroke-width="14" stroke-linecap="round"/>
-            <rect id="conn-plug"  x="0" y="68" width="28" height="20" rx="2" fill="white"/>
-            <rect id="conn-plug2" x="0" y="68" width="10" height="12" rx="1" fill="#cccccc"/>
-          </svg>
-
-          <!-- Bluetooth scene -->
-          <svg id="conn-scene-bt" style="width:70%;max-width:380px;height:auto;" viewBox="0 0 300 210">
-            <path class="conn-bt-path"
-              d="M 80,190 L 80,20 L 140,60 L 80,110 L 140,160 L 80,190"
-              fill="none" stroke="#1a73e8" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-
-          <!-- WiFi scene -->
-          <svg id="conn-scene-wifi" style="width:70%;max-width:380px;height:auto;" viewBox="0 0 300 160">
-            <circle class="conn-wifi-dot" cx="150" cy="118" r="10" fill="#fbbc04"/>
-            <path class="conn-wifi-arc"
-              d="M116,92 Q150,74 184,92"
-              fill="none" stroke="#fbbc04" stroke-width="14" stroke-linecap="round"/>
-            <path class="conn-wifi-arc"
-              d="M88,68 Q150,42 212,68"
-              fill="none" stroke="#fbbc04" stroke-width="14" stroke-linecap="round"/>
-            <path class="conn-wifi-arc"
-              d="M60,44 Q150,10 240,44"
-              fill="none" stroke="#fbbc04" stroke-width="14" stroke-linecap="round"/>
-          </svg>
-
-          <script>
-          (function(){
-            var path  = document.getElementById('conn-cable-path');
-            var plug  = document.getElementById('conn-plug');
-            var plug2 = document.getElementById('conn-plug2');
-            var svgUsb  = document.getElementById('conn-svg');
-            var svgBt   = document.getElementById('conn-scene-bt');
-            var svgWifi = document.getElementById('conn-scene-wifi');
-
-            var total = path.getTotalLength();
-            path.style.strokeDasharray  = total;
-            path.style.strokeDashoffset = total;
-
-            var SCENE_DUR = 2800; // ms per scene
-            var scenes = ['usb','bt','wifi'];
-            var curScene = 0;
-            var start = null;
-
-            function ease(t) {
-              return t < 0.5 ? 2*t*t : -1+(4-2*t)*t;
-            }
-
-            function restartSvgAnimations(svg) {
-              // force CSS animations to restart
-              svg.style.display = 'none';
-              void svg.offsetWidth;
-              svg.style.display = 'block';
-              svg.querySelectorAll('[class]').forEach(function(el){
-                el.style.animation = 'none';
-                void el.offsetWidth;
-                el.style.animation = '';
-              });
-            }
-
-            function showScene(name) {
-              svgUsb.style.display  = 'none';
-              svgBt.style.display   = 'none';
-              svgWifi.style.display = 'none';
-              if (name === 'usb') {
-                svgUsb.style.display = 'block';
-              } else if (name === 'bt') {
-                restartSvgAnimations(svgBt);
-              } else if (name === 'wifi') {
-                restartSvgAnimations(svgWifi);
-              }
-            }
-
-            function tick(ts) {
-              if (!start) start = ts;
-              var elapsed = (ts - start) % SCENE_DUR;
-              var t = elapsed / SCENE_DUR;
-
-              // advance scene
-              var scene = scenes[curScene];
-
-              if (scene === 'usb') {
-                var progress = t < 0.6 ? ease(t / 0.6) : 1;
-                var offset = total * (1 - progress);
-                path.style.strokeDashoffset = offset;
-                var opacity = t > 0.85 ? 1 - ((t - 0.85) / 0.15) : 1;
-                path.style.opacity  = opacity;
-                plug.style.opacity  = opacity;
-                plug2.style.opacity = opacity;
-                var drawn = total * progress;
-                var pt = path.getPointAtLength(drawn);
-                plug.setAttribute('x',  pt.x);
-                plug.setAttribute('y',  pt.y - 10);
-                plug2.setAttribute('x', pt.x + 30);
-                plug2.setAttribute('y', pt.y - 6);
-              }
-
-              // check if scene just rolled over
-              if (elapsed < 20 && ts > start + 100) {
-                if (!window.sceneJustChanged) {
-                  window.sceneJustChanged = true;
-                  curScene = (curScene + 1) % scenes.length;
-                  showScene(scenes[curScene]);
-                  // reset USB for when it comes back
-                  if (scenes[curScene] !== 'usb') {
-                    path.style.strokeDashoffset = total;
-                    path.style.opacity = 1;
-                    plug.style.opacity = 1;
-                    plug2.style.opacity = 1;
-                  }
-                }
-              } else {
-                window.sceneJustChanged = false;
-              }
-
-              requestAnimationFrame(tick);
-            }
-
-            showScene('usb');
-            requestAnimationFrame(tick);
-          })();
-          </script>
+          <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9%;">
+            <div style="height:45%;display:flex;align-items:center;justify-content:center;gap:11%;">
+              <svg viewBox="0 0 490 438" style="height:100%;width:auto;display:block;"><path d="M136.78,76.9C188.38,54.71 245.15,48.91 299.92,60.22C354.69,71.54 405,99.46 444.49,140.46C446.9,143.15 449.8,145.3 453.02,146.79C456.25,148.28 459.73,149.08 463.26,149.15C466.79,149.21 470.29,148.54 473.56,147.16C476.83,145.79 479.81,143.75 482.3,141.16C484.8,138.57 486.77,135.48 488.09,132.08C489.41,128.68 490.06,125.04 490,121.38C489.93,117.71 489.16,114.1 487.73,110.75C486.29,107.4 484.22,104.39 481.64,101.89C450.54,69.59 413.62,43.97 372.99,26.48C332.36,9 288.81,0 244.82,0C200.84,0 157.29,9 116.66,26.48C76.03,43.97 39.11,69.59 8.01,101.89C5.5,104.41 3.5,107.43 2.13,110.75C0.75,114.08 0.03,117.67 0,121.29C-0.03,124.91 0.64,128.51 1.96,131.86C3.28,135.21 5.24,138.26 7.71,140.82C10.17,143.38 13.11,145.41 16.34,146.78C19.57,148.15 23.03,148.84 26.52,148.8C30.01,148.77 33.46,148.01 36.66,146.58C39.87,145.15 42.77,143.07 45.19,140.46C71.43,113.26 102.55,91.67 136.78,76.9ZM244.84,158C219.32,158.01 194.05,163.25 170.49,173.43C146.92,183.61 125.52,198.52 107.52,217.31C102.61,222.45 95.93,225.34 88.96,225.36C81.99,225.38 75.29,222.53 70.35,217.42C65.4,212.32 62.62,205.38 62.6,198.14C62.58,190.9 65.33,183.95 70.24,178.82C93.12,154.92 120.33,135.95 150.29,123.01C180.26,110.07 212.39,103.41 244.84,103.41C277.3,103.41 309.43,110.07 339.39,123.01C369.36,135.95 396.56,154.92 419.44,178.82C424.36,183.95 427.11,190.9 427.09,198.14C427.07,205.38 424.28,212.32 419.34,217.42C414.39,222.53 407.7,225.38 400.73,225.36C393.76,225.34 387.08,222.45 382.16,217.31C364.16,198.52 342.76,183.61 319.2,173.43C295.63,163.25 270.36,158.01 244.84,158ZM210.5,264.94C227.35,257.54 245.95,255.59 263.88,259.36C281.8,263.13 298.21,272.43 310.96,286.05C315.83,291.23 322.48,294.2 329.45,294.3C336.42,294.39 343.14,291.61 348.14,286.56C353.13,281.51 355.99,274.6 356.08,267.36C356.17,260.12 353.49,253.14 348.63,247.95C335.26,233.7 319.28,222.37 301.63,214.63C283.98,206.9 265.02,202.91 245.86,202.91C226.7,202.91 207.74,206.9 190.09,214.63C172.43,222.37 156.46,233.7 143.09,247.95C138.22,253.13 135.53,260.11 135.62,267.35C135.7,274.59 138.55,281.5 143.54,286.56C148.54,291.61 155.26,294.4 162.23,294.32C169.2,294.23 175.85,291.27 180.72,286.08C189.2,277.06 199.33,269.86 210.5,264.98V264.94ZM189.06,380.07C189.06,364.71 194.94,349.97 205.4,339.11C215.86,328.25 230.05,322.14 244.84,322.14C259.64,322.14 273.83,328.25 284.29,339.11C294.75,349.97 300.62,364.71 300.62,380.07C300.62,395.43 294.75,410.17 284.29,421.03C273.83,431.9 259.64,438 244.84,438C230.05,438 215.86,431.9 205.4,421.03C194.94,410.17 189.06,395.43 189.06,380.07Z" fill="#D3FF0D" fill-rule="evenodd" /></svg>
+              <svg viewBox="0 0 326 514" style="height:100%;width:auto;display:block;"><path d="M326,146.75L179.54,0H153.9V195.06L36.17,77.1L0,113.34L143.38,257L0,400.66L36.17,436.9L153.9,318.94V514H179.54L326,367.25L215.71,257L326,146.75ZM205.19,98.43L253.41,146.75L205.19,195.06V98.43ZM253.41,367.25L205.19,415.57V318.94L253.41,367.25Z" fill="#0066FF" /></svg>
+            </div>
+            <div style="height:14%;display:flex;">
+              <svg viewBox="0 0 498 125" style="height:100%;width:auto;display:block;"><path d="M35,28L321,28A35,35 0,0 1,356 63L356,63A35,35 0,0 1,321 98L35,98A35,35 0,0 1,0 63L0,63A35,35 0,0 1,35 28z" fill="#EA4335" /> <path d="M301,0L445,0A10,10 0,0 1,455 10L455,115A10,10 0,0 1,445 125L301,125A10,10 0,0 1,291 115L291,10A10,10 0,0 1,301 0z" fill="#D9D9D9" /> <path d="M460,28h38v70h-38z" fill="#D9D9D9" /></svg>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -2956,22 +2799,27 @@ a.innerHTML = '<img src="https://upload.wikimedia.org/wikipedia/commons/f/f1/Ico
 <script src="https://cdn.jsdelivr.net/npm/lottie-web@5.12.2/build/player/lottie_light.min.js"></script>
 <script>
 (function () {
-  var GC_DATA = {"v":"5.7.0","fr":60,"ip":0,"op":570,"w":512,"h":416,"nm":"Trackpad gestures","ddd":0,"assets":[],"layers":[{"ddd":0,"ind":1,"ty":4,"nm":"pinch-2","cl":"gc-fill","sr":1,"ks":{"o":{"a":1,"k":[{"t":0,"s":[0],"h":1},{"t":390.0,"s":[0],"o":{"x":[0.25],"y":[0.1]},"i":{"x":[0.25],"y":[1]}},{"t":402.0,"s":[100],"h":1},{"t":552.0,"s":[100],"o":{"x":[0.25],"y":[0.1]},"i":{"x":[0.25],"y":[1]}},{"t":564.0,"s":[0],"h":1},{"t":570,"s":[0]}]},"r":{"a":0,"k":0},"p":{"a":1,"k":[{"t":0,"s":[256.0,208.0],"h":1},{"t":405.0,"s":[256.0,208.0],"o":{"x":[0.42],"y":[0]},"i":{"x":[0.58],"y":[1]},"to":[0,0],"ti":[0,0]},{"t":447.0,"s":[399.36,208.0],"h":1},{"t":456.0,"s":[399.36,208.0],"o":{"x":[0.42],"y":[0]},"i":{"x":[0.58],"y":[1]},"to":[0,0],"ti":[0,0]},{"t":498.0,"s":[256.0,208.0],"h":1},{"t":504.0,"s":[256.0,208.0],"o":{"x":[0.42],"y":[0]},"i":{"x":[0.58],"y":[1]},"to":[0,0],"ti":[0,0]},{"t":546.0,"s":[399.36,208.0],"h":1},{"t":570,"s":[399.36,208.0]}]},"a":{"a":0,"k":[0,0,0]},"s":{"a":0,"k":[100,100,100]}},"ao":0,"shapes":[{"ty":"gr","it":[{"ty":"el","d":1,"s":{"a":0,"k":[60,60]},"p":{"a":0,"k":[0,0]},"nm":"Ellipse"},{"ty":"fl","c":{"a":0,"k":[1,1,1,1]},"o":{"a":0,"k":100},"r":1,"bm":0,"nm":"Fill"},{"ty":"tr","p":{"a":0,"k":[0,0]},"a":{"a":0,"k":[0,0]},"s":{"a":0,"k":[100,100]},"r":{"a":0,"k":0},"o":{"a":0,"k":100},"sk":{"a":0,"k":0},"sa":{"a":0,"k":0}}],"nm":"Group"}],"ip":0,"op":570,"st":0,"bm":0},{"ddd":0,"ind":2,"ty":4,"nm":"pinch-1","cl":"gc-fill","sr":1,"ks":{"o":{"a":1,"k":[{"t":0,"s":[0],"h":1},{"t":390.0,"s":[0],"o":{"x":[0.25],"y":[0.1]},"i":{"x":[0.25],"y":[1]}},{"t":402.0,"s":[100],"h":1},{"t":552.0,"s":[100],"o":{"x":[0.25],"y":[0.1]},"i":{"x":[0.25],"y":[1]}},{"t":564.0,"s":[0],"h":1},{"t":570,"s":[0]}]},"r":{"a":0,"k":0},"p":{"a":1,"k":[{"t":0,"s":[256.0,208.0],"h":1},{"t":405.0,"s":[256.0,208.0],"o":{"x":[0.42],"y":[0]},"i":{"x":[0.58],"y":[1]},"to":[0,0],"ti":[0,0]},{"t":447.0,"s":[112.64,208.0],"h":1},{"t":456.0,"s":[112.64,208.0],"o":{"x":[0.42],"y":[0]},"i":{"x":[0.58],"y":[1]},"to":[0,0],"ti":[0,0]},{"t":498.0,"s":[256.0,208.0],"h":1},{"t":504.0,"s":[256.0,208.0],"o":{"x":[0.42],"y":[0]},"i":{"x":[0.58],"y":[1]},"to":[0,0],"ti":[0,0]},{"t":546.0,"s":[112.64,208.0],"h":1},{"t":570,"s":[112.64,208.0]}]},"a":{"a":0,"k":[0,0,0]},"s":{"a":0,"k":[100,100,100]}},"ao":0,"shapes":[{"ty":"gr","it":[{"ty":"el","d":1,"s":{"a":0,"k":[60,60]},"p":{"a":0,"k":[0,0]},"nm":"Ellipse"},{"ty":"fl","c":{"a":0,"k":[1,1,1,1]},"o":{"a":0,"k":100},"r":1,"bm":0,"nm":"Fill"},{"ty":"tr","p":{"a":0,"k":[0,0]},"a":{"a":0,"k":[0,0]},"s":{"a":0,"k":[100,100]},"r":{"a":0,"k":0},"o":{"a":0,"k":100},"sk":{"a":0,"k":0},"sa":{"a":0,"k":0}}],"nm":"Group"}],"ip":0,"op":570,"st":0,"bm":0},{"ddd":0,"ind":3,"ty":4,"nm":"cursor","cl":"gc-fill","sr":1,"ks":{"o":{"a":0,"k":100},"r":{"a":0,"k":0},"p":{"a":1,"k":[{"t":0,"s":[256.0,208.0],"h":1},{"t":27.0,"s":[256.0,208.0],"o":{"x":[0.25],"y":[0.1]},"i":{"x":[0.25],"y":[1]},"to":[0,0],"ti":[0,0]},{"t":63.0,"s":[348.16,124.8],"h":1},{"t":69.0,"s":[348.16,124.8],"o":{"x":[0.25],"y":[0.1]},"i":{"x":[0.25],"y":[1]},"to":[0,0],"ti":[0,0]},{"t":105.0,"s":[143.36,270.4],"h":1},{"t":111.0,"s":[143.36,270.4],"o":{"x":[0.25],"y":[0.1]},"i":{"x":[0.25],"y":[1]},"to":[0,0],"ti":[0,0]},{"t":147.0,"s":[307.2,228.8],"h":1},{"t":153.0,"s":[307.2,228.8],"o":{"x":[0.25],"y":[0.1]},"i":{"x":[0.25],"y":[1]},"to":[0,0],"ti":[0,0]},{"t":189.0,"s":[256.0,208.0],"h":1},{"t":570,"s":[256.0,208.0]}]},"a":{"a":0,"k":[0,0,0]},"s":{"a":0,"k":[100,100,100]}},"ao":0,"shapes":[{"ty":"gr","it":[{"ty":"el","d":1,"s":{"a":1,"k":[{"t":0,"s":[0,0],"h":1},{"t":4.8,"s":[0,0],"o":{"x":[0],"y":[0]},"i":{"x":[0.58],"y":[1]}},{"t":16.8,"s":[60,60],"h":1},{"t":204.0,"s":[60,60],"o":{"x":[0.42],"y":[0]},"i":{"x":[1],"y":[1]}},{"t":213.0,"s":[0,0],"h":1},{"t":238.8,"s":[0,0],"o":{"x":[0],"y":[0]},"i":{"x":[0.58],"y":[1]}},{"t":298.8,"s":[102,102],"h":1},{"t":306.0,"s":[102,102],"o":{"x":[0.42],"y":[0]},"i":{"x":[1],"y":[1]}},{"t":327.0,"s":[0,0],"h":1},{"t":570,"s":[0,0]}]},"p":{"a":0,"k":[0,0]},"nm":"Ellipse"},{"ty":"fl","c":{"a":0,"k":[1,1,1,1]},"o":{"a":0,"k":100},"r":1,"bm":0,"nm":"Fill"},{"ty":"tr","p":{"a":0,"k":[0,0]},"a":{"a":0,"k":[0,0]},"s":{"a":0,"k":[100,100]},"r":{"a":0,"k":0},"o":{"a":0,"k":100},"sk":{"a":0,"k":0},"sa":{"a":0,"k":0}}],"nm":"Group"}],"ip":0,"op":570,"st":0,"bm":0},{"ddd":0,"ind":4,"ty":4,"nm":"ring","cl":"gc-stroke","sr":1,"ks":{"o":{"a":1,"k":[{"t":0,"s":[0],"h":1},{"t":237.0,"s":[0],"o":{"x":[0.25],"y":[0.1]},"i":{"x":[0.25],"y":[1]}},{"t":243.0,"s":[100],"h":1},{"t":306.0,"s":[100],"o":{"x":[0.25],"y":[0.1]},"i":{"x":[0.25],"y":[1]}},{"t":327.0,"s":[0],"h":1},{"t":570,"s":[0]}]},"r":{"a":0,"k":0},"p":{"a":0,"k":[256.0,208.0]},"a":{"a":0,"k":[0,0,0]},"s":{"a":0,"k":[100,100,100]}},"ao":0,"shapes":[{"ty":"gr","it":[{"ty":"el","d":1,"s":{"a":0,"k":[104,104]},"p":{"a":0,"k":[0,0]},"nm":"Ellipse"},{"ty":"st","c":{"a":0,"k":[1,1,1,1]},"o":{"a":0,"k":100},"w":{"a":0,"k":6},"lc":1,"lj":1,"ml":4,"bm":0,"nm":"Stroke"},{"ty":"tr","p":{"a":0,"k":[0,0]},"a":{"a":0,"k":[0,0]},"s":{"a":0,"k":[100,100]},"r":{"a":0,"k":0},"o":{"a":0,"k":100},"sk":{"a":0,"k":0},"sa":{"a":0,"k":0}}],"nm":"Group"}],"ip":0,"op":570,"st":0,"bm":0}],"markers":[{"tm":0,"cm":"TAP & MOVE","dr":0},{"tm":219.0,"cm":"LONG PRESS","dr":0},{"tm":378.0,"cm":"PINCH TO ZOOM","dr":0}]};
-  var box = document.getElementById('gc-lottie'), lbl = document.getElementById('gc-phase-label');
-  var anim = lottie.loadAnimation({ container: box, renderer: 'svg', loop: true, autoplay: false, animationData: GC_DATA });
-  var phases = [[378, 'PINCH TO ZOOM'], [219, 'LONG PRESS'], [0, 'TAP & MOVE']], current = '';
-  anim.addEventListener('enterFrame', function (e) {
-    var name = phases.find(function (p) { return e.currentTime >= p[0]; })[1];
+  // Spielt eine Lottie-Animation nur, solange ihr Slide sichtbar ist
+  function playInView(box, data, delay, onFrame) {
+    var anim = lottie.loadAnimation({ container: box, renderer: 'svg', loop: true, autoplay: false, animationData: data });
+    if (onFrame) anim.addEventListener('enterFrame', function (e) { onFrame(e.currentTime); });
+    var started = false;
+    new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (!en.isIntersecting) return anim.pause();
+        if (started) return anim.play();
+        started = true; setTimeout(function () { anim.play(); }, delay);
+      });
+    }, { threshold: 0.4 }).observe(box.parentElement);
+  }
+
+  // Trackpad-Gesten (mit Phasen-Label)
+  var lbl = document.getElementById('gc-phase-label'), current = '';
+  var phases = [[378, 'PINCH TO ZOOM'], [219, 'LONG PRESS'], [0, 'TAP & MOVE']];
+  playInView(document.getElementById('gc-lottie'), {"v":"5.7.0","fr":60,"ip":0,"op":570,"w":512,"h":416,"nm":"Trackpad gestures","ddd":0,"assets":[],"layers":[{"ddd":0,"ind":1,"ty":4,"nm":"pinch-2","cl":"gc-fill","sr":1,"ks":{"o":{"a":1,"k":[{"t":0,"s":[0],"h":1},{"t":390.0,"s":[0],"o":{"x":[0.25],"y":[0.1]},"i":{"x":[0.25],"y":[1]}},{"t":402.0,"s":[100],"h":1},{"t":552.0,"s":[100],"o":{"x":[0.25],"y":[0.1]},"i":{"x":[0.25],"y":[1]}},{"t":564.0,"s":[0],"h":1},{"t":570,"s":[0]}]},"r":{"a":0,"k":0},"p":{"a":1,"k":[{"t":0,"s":[256.0,208.0],"h":1},{"t":405.0,"s":[256.0,208.0],"o":{"x":[0.42],"y":[0]},"i":{"x":[0.58],"y":[1]},"to":[0,0],"ti":[0,0]},{"t":447.0,"s":[399.36,208.0],"h":1},{"t":456.0,"s":[399.36,208.0],"o":{"x":[0.42],"y":[0]},"i":{"x":[0.58],"y":[1]},"to":[0,0],"ti":[0,0]},{"t":498.0,"s":[256.0,208.0],"h":1},{"t":504.0,"s":[256.0,208.0],"o":{"x":[0.42],"y":[0]},"i":{"x":[0.58],"y":[1]},"to":[0,0],"ti":[0,0]},{"t":546.0,"s":[399.36,208.0],"h":1},{"t":570,"s":[399.36,208.0]}]},"a":{"a":0,"k":[0,0,0]},"s":{"a":0,"k":[100,100,100]}},"ao":0,"shapes":[{"ty":"gr","it":[{"ty":"el","d":1,"s":{"a":0,"k":[60,60]},"p":{"a":0,"k":[0,0]},"nm":"Ellipse"},{"ty":"fl","c":{"a":0,"k":[1,1,1,1]},"o":{"a":0,"k":100},"r":1,"bm":0,"nm":"Fill"},{"ty":"tr","p":{"a":0,"k":[0,0]},"a":{"a":0,"k":[0,0]},"s":{"a":0,"k":[100,100]},"r":{"a":0,"k":0},"o":{"a":0,"k":100},"sk":{"a":0,"k":0},"sa":{"a":0,"k":0}}],"nm":"Group"}],"ip":0,"op":570,"st":0,"bm":0},{"ddd":0,"ind":2,"ty":4,"nm":"pinch-1","cl":"gc-fill","sr":1,"ks":{"o":{"a":1,"k":[{"t":0,"s":[0],"h":1},{"t":390.0,"s":[0],"o":{"x":[0.25],"y":[0.1]},"i":{"x":[0.25],"y":[1]}},{"t":402.0,"s":[100],"h":1},{"t":552.0,"s":[100],"o":{"x":[0.25],"y":[0.1]},"i":{"x":[0.25],"y":[1]}},{"t":564.0,"s":[0],"h":1},{"t":570,"s":[0]}]},"r":{"a":0,"k":0},"p":{"a":1,"k":[{"t":0,"s":[256.0,208.0],"h":1},{"t":405.0,"s":[256.0,208.0],"o":{"x":[0.42],"y":[0]},"i":{"x":[0.58],"y":[1]},"to":[0,0],"ti":[0,0]},{"t":447.0,"s":[112.64,208.0],"h":1},{"t":456.0,"s":[112.64,208.0],"o":{"x":[0.42],"y":[0]},"i":{"x":[0.58],"y":[1]},"to":[0,0],"ti":[0,0]},{"t":498.0,"s":[256.0,208.0],"h":1},{"t":504.0,"s":[256.0,208.0],"o":{"x":[0.42],"y":[0]},"i":{"x":[0.58],"y":[1]},"to":[0,0],"ti":[0,0]},{"t":546.0,"s":[112.64,208.0],"h":1},{"t":570,"s":[112.64,208.0]}]},"a":{"a":0,"k":[0,0,0]},"s":{"a":0,"k":[100,100,100]}},"ao":0,"shapes":[{"ty":"gr","it":[{"ty":"el","d":1,"s":{"a":0,"k":[60,60]},"p":{"a":0,"k":[0,0]},"nm":"Ellipse"},{"ty":"fl","c":{"a":0,"k":[1,1,1,1]},"o":{"a":0,"k":100},"r":1,"bm":0,"nm":"Fill"},{"ty":"tr","p":{"a":0,"k":[0,0]},"a":{"a":0,"k":[0,0]},"s":{"a":0,"k":[100,100]},"r":{"a":0,"k":0},"o":{"a":0,"k":100},"sk":{"a":0,"k":0},"sa":{"a":0,"k":0}}],"nm":"Group"}],"ip":0,"op":570,"st":0,"bm":0},{"ddd":0,"ind":3,"ty":4,"nm":"cursor","cl":"gc-fill","sr":1,"ks":{"o":{"a":0,"k":100},"r":{"a":0,"k":0},"p":{"a":1,"k":[{"t":0,"s":[256.0,208.0],"h":1},{"t":27.0,"s":[256.0,208.0],"o":{"x":[0.25],"y":[0.1]},"i":{"x":[0.25],"y":[1]},"to":[0,0],"ti":[0,0]},{"t":63.0,"s":[348.16,124.8],"h":1},{"t":69.0,"s":[348.16,124.8],"o":{"x":[0.25],"y":[0.1]},"i":{"x":[0.25],"y":[1]},"to":[0,0],"ti":[0,0]},{"t":105.0,"s":[143.36,270.4],"h":1},{"t":111.0,"s":[143.36,270.4],"o":{"x":[0.25],"y":[0.1]},"i":{"x":[0.25],"y":[1]},"to":[0,0],"ti":[0,0]},{"t":147.0,"s":[307.2,228.8],"h":1},{"t":153.0,"s":[307.2,228.8],"o":{"x":[0.25],"y":[0.1]},"i":{"x":[0.25],"y":[1]},"to":[0,0],"ti":[0,0]},{"t":189.0,"s":[256.0,208.0],"h":1},{"t":570,"s":[256.0,208.0]}]},"a":{"a":0,"k":[0,0,0]},"s":{"a":0,"k":[100,100,100]}},"ao":0,"shapes":[{"ty":"gr","it":[{"ty":"el","d":1,"s":{"a":1,"k":[{"t":0,"s":[0,0],"h":1},{"t":4.8,"s":[0,0],"o":{"x":[0],"y":[0]},"i":{"x":[0.58],"y":[1]}},{"t":16.8,"s":[60,60],"h":1},{"t":204.0,"s":[60,60],"o":{"x":[0.42],"y":[0]},"i":{"x":[1],"y":[1]}},{"t":213.0,"s":[0,0],"h":1},{"t":238.8,"s":[0,0],"o":{"x":[0],"y":[0]},"i":{"x":[0.58],"y":[1]}},{"t":298.8,"s":[102,102],"h":1},{"t":306.0,"s":[102,102],"o":{"x":[0.42],"y":[0]},"i":{"x":[1],"y":[1]}},{"t":327.0,"s":[0,0],"h":1},{"t":570,"s":[0,0]}]},"p":{"a":0,"k":[0,0]},"nm":"Ellipse"},{"ty":"fl","c":{"a":0,"k":[1,1,1,1]},"o":{"a":0,"k":100},"r":1,"bm":0,"nm":"Fill"},{"ty":"tr","p":{"a":0,"k":[0,0]},"a":{"a":0,"k":[0,0]},"s":{"a":0,"k":[100,100]},"r":{"a":0,"k":0},"o":{"a":0,"k":100},"sk":{"a":0,"k":0},"sa":{"a":0,"k":0}}],"nm":"Group"}],"ip":0,"op":570,"st":0,"bm":0},{"ddd":0,"ind":4,"ty":4,"nm":"ring","cl":"gc-stroke","sr":1,"ks":{"o":{"a":1,"k":[{"t":0,"s":[0],"h":1},{"t":237.0,"s":[0],"o":{"x":[0.25],"y":[0.1]},"i":{"x":[0.25],"y":[1]}},{"t":243.0,"s":[100],"h":1},{"t":306.0,"s":[100],"o":{"x":[0.25],"y":[0.1]},"i":{"x":[0.25],"y":[1]}},{"t":327.0,"s":[0],"h":1},{"t":570,"s":[0]}]},"r":{"a":0,"k":0},"p":{"a":0,"k":[256.0,208.0]},"a":{"a":0,"k":[0,0,0]},"s":{"a":0,"k":[100,100,100]}},"ao":0,"shapes":[{"ty":"gr","it":[{"ty":"el","d":1,"s":{"a":0,"k":[104,104]},"p":{"a":0,"k":[0,0]},"nm":"Ellipse"},{"ty":"st","c":{"a":0,"k":[1,1,1,1]},"o":{"a":0,"k":100},"w":{"a":0,"k":6},"lc":1,"lj":1,"ml":4,"bm":0,"nm":"Stroke"},{"ty":"tr","p":{"a":0,"k":[0,0]},"a":{"a":0,"k":[0,0]},"s":{"a":0,"k":[100,100]},"r":{"a":0,"k":0},"o":{"a":0,"k":100},"sk":{"a":0,"k":0},"sa":{"a":0,"k":0}}],"nm":"Group"}],"ip":0,"op":570,"st":0,"bm":0}],"markers":[{"tm":0,"cm":"TAP & MOVE","dr":0},{"tm":219.0,"cm":"LONG PRESS","dr":0},{"tm":378.0,"cm":"PINCH TO ZOOM","dr":0}]}, 400, function (frame) {
+    var name = phases.find(function (p) { return frame >= p[0]; })[1];
     if (name !== current) lbl.textContent = current = name;
   });
-  var started = false;
-  new IntersectionObserver(function (entries) {
-    entries.forEach(function (en) {
-      if (!en.isIntersecting) return anim.pause();
-      if (started) return anim.play();
-      started = true; setTimeout(function () { anim.play(); }, 400);
-    });
-  }, { threshold: 0.4 }).observe(box.parentElement);
 })();
 </script>
 </body>
