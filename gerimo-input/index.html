@@ -1587,7 +1587,16 @@ html.light .kb-win-btn {
             html.light .kb-icon-light { display:none !important; }
             .kb-key-space { background: #ffffff; }
             html.light .kb-key-space { background: #3a3a3a !important; }
-          </style>
+          
+/* ── UNIFIED PAGE: all sections flow as one, no carousel, no separate section boxes ── */
+.features-carousel { min-height:0; overflow:visible; }
+.fc-slide, .fc-slide:not(.active) { display:block; animation:none; }
+.fc-slide + .fc-slide { margin-top:48px; }
+.fc-arrow, .fc-dots, .fc-prev, .fc-next { display:none !important; }
+.linux-section { background:none; border-top:none; border-bottom:none; }
+.stats-section { background:none; border-top:none; border-bottom:none; gap:0; }
+.stat-box { background:none; }
+</style>
 
           <!-- KEYBOARD standalone mit runden Ecken -->
           <div class="kb-phone-keyboard" style="border-radius:16px;padding:12px 10px 10px;flex-shrink:0;width:220px;">
