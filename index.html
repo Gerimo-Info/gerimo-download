@@ -1384,9 +1384,10 @@ html.light .kb-win-btn {
 .product-card { background:var(--bg-secondary); border:1px solid var(--border-color); border-radius:24px;
   padding:36px; display:flex; flex-direction:column; transition:transform .2s, box-shadow .2s; }
 .product-card:hover { transform:translateY(-4px); box-shadow:0 12px 40px rgba(0,0,0,0.12); }
-.product-icon { width:72px; height:72px; border-radius:18px; display:flex; align-items:center; justify-content:center; margin-bottom:24px; }
+.product-icon { height:96px; display:flex; align-items:center; margin-bottom:24px; }
+.ic-s1 { stop-color:#f1f3f4; } .ic-s2 { stop-color:#d2d5d9; } .ic-detail { fill:#272727; }
+html.light .ic-s1 { stop-color:#303030; } html.light .ic-s2 { stop-color:#272727; } html.light .ic-detail { fill:#fff; }
 .product-card h2 { font-family:'Google Sans Display','Google Sans',sans-serif; font-size:2rem; letter-spacing:-0.5px; margin-bottom:6px; color:var(--text-primary); }
-.product-tag { font-size:0.78rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:#1a73e8; margin-bottom:16px; }
 .product-card p.lead { color:var(--text-secondary); line-height:1.65; margin-bottom:20px; }
 .product-points { list-style:none; margin-bottom:28px; display:flex; flex-direction:column; gap:10px; }
 .product-points li { display:flex; gap:10px; font-size:0.95rem; color:var(--text-primary); }
@@ -1464,11 +1465,35 @@ html.light .kb-win-btn {
 
 <div class="product-grid">
   <article class="product-card">
-    <div class="product-icon" style="background:#1a73e8;">
-  <svg width="40" height="40" viewBox="0 0 40 40" fill="none"><rect x="6" y="8" width="28" height="20" rx="3" stroke="#fff" stroke-width="2.4"/>
-  <path d="M12 22c3-6 6 2 9-3s5-3 7-6" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/><path d="M15 33h10" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/></svg></div>
+    <div class="product-icon" style="background:none;">
+  <svg width="auto" height="40" style="height:84px;width:auto" viewBox="0 0 512 464" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M394.897 1.0722C411.454 -3.34545 428.401 6.28926 432.75 22.5919L510.969 315.81C514.861 330.398 507.344 345.381 493.856 351.536C495.361 343.956 492.531 335.564 484.647 331.086L306.406 225.837C290.949 216.109 273.443 231.622 277.664 247.447L297.865 323.173L318.066 398.899L189.461 433.213C189.471 432.847 189.476 432.481 189.476 432.113L189.384 128.529C189.377 106.009 170.869 87.8987 148.044 88.0802L66.3636 88.7303L394.897 1.0722Z" fill="url(#paint0_linear_2112_18)"/>
+<path d="M0.000102481 129.945L1.45818e-06 130.034L0.000102481 130.372V129.945ZM432.75 22.5919C428.401 6.28926 411.454 -3.34545 394.897 1.0722L66.3636 88.7303L148.044 88.0802C170.869 87.8987 189.377 106.009 189.384 128.529L189.476 432.113C189.476 432.481 189.471 432.847 189.461 433.213L318.066 398.899L297.865 323.173L277.664 247.447C273.443 231.622 290.949 216.109 306.406 225.837L484.647 331.086C492.531 335.564 495.361 343.956 493.856 351.536C507.344 345.381 514.861 330.398 510.969 315.81L432.75 22.5919Z" fill="url(#paint1_linear_2112_18)"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M148.047 98.2747L30.9865 99.2056C13.8982 99.3415 0.0438409 113.095 0.000102481 129.945V130.372L0.0919396 433.619C0.0970546 450.509 13.9785 464.09 31.097 463.954L148.158 463.023C165.276 462.887 179.149 449.085 179.144 432.195L179.052 128.61C179.047 111.72 165.166 98.1386 148.047 98.2747Z" fill="url(#paint2_linear_2112_18)"/>
+<path d="M56.7265 435.684L116.658 435.208C119.511 435.185 121.825 437.449 121.826 440.264C121.827 443.079 119.556 445.379 116.703 445.402L56.7778 445.878C53.9247 445.901 51.5624 443.637 51.5615 440.822C51.5607 438.007 53.8731 435.707 56.7265 435.684Z" class="ic-detail" fill="white"/>
+<path d="M287.657 244.781C285.522 236.776 294.31 230.25 300.922 234.519L479.345 339.876C486.461 343.823 484.883 354.681 477.232 356.723L424.89 370.689L470.146 429.721C473.292 433.811 472.476 439.557 468.611 442.679L447.143 459.611C443.142 462.77 437.475 461.892 434.365 457.941L391.374 401.89L360.221 456.81C356.07 464.128 345.636 462.124 343.608 454.52L287.657 244.781Z" fill="url(#paint3_linear_2112_18)"/>
+<defs>
+<linearGradient id="paint0_linear_2112_18" x1="255.997" y1="0" x2="255.997" y2="463.955" gradientUnits="userSpaceOnUse">
+<stop class="ic-s1" stop-color="#303030"/>
+<stop class="ic-s2" offset="1" stop-color="#272727"/>
+</linearGradient>
+<linearGradient id="paint1_linear_2112_18" x1="255.997" y1="0" x2="255.997" y2="463.955" gradientUnits="userSpaceOnUse">
+<stop class="ic-s1" stop-color="#303030"/>
+<stop class="ic-s2" offset="1" stop-color="#272727"/>
+</linearGradient>
+<linearGradient id="paint2_linear_2112_18" x1="255.997" y1="0" x2="255.997" y2="463.955" gradientUnits="userSpaceOnUse">
+<stop class="ic-s1" stop-color="#303030"/>
+<stop class="ic-s2" offset="1" stop-color="#272727"/>
+</linearGradient>
+<linearGradient id="paint3_linear_2112_18" x1="385.621" y1="233.17" x2="385.621" y2="461.527" gradientUnits="userSpaceOnUse">
+<stop class="ic-s1" stop-color="#303030"/>
+<stop class="ic-s2" offset="1" stop-color="#272727"/>
+</linearGradient>
+</defs>
+</svg>
+    </div>
     <h2>Gerimo Input</h2>
-    <div class="product-tag">Android + Windows &amp; Linux</div>
+    <span class="feature-label">Android + Windows &amp; Linux</span>
     <p class="lead">Turn your Android device into a graphics tablet, trackpad, keyboard and AI shortcut panel for your PC.</p>
     <ul class="product-points">
       <li>Pen input with ultra-low latency</li>
@@ -1483,11 +1508,24 @@ html.light .kb-win-btn {
   </article>
 
   <article class="product-card">
-    <div class="product-icon" style="background:#34a853;">
-  <svg width="40" height="40" viewBox="0 0 40 40" fill="none"><rect x="9" y="6" width="22" height="28" rx="3" stroke="#fff" stroke-width="2.4"/>
-  <path d="M14 14h12M14 20h12M14 26h7" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/></svg></div>
+    <div class="product-icon" style="background:none;">
+  <svg width="auto" height="44" style="height:96px;width:auto" viewBox="0 0 145 408" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M72.1035 0C75.719 6.64225e-05 79.264 1.00763 82.3379 2.91113C85.4115 4.81468 87.8938 7.53889 89.5049 10.7754L124.786 81.377C131.476 94.757 134.835 101.461 137.312 108.424C140.219 116.654 142.228 125.177 143.303 133.839C144.21 141.177 144.21 148.673 144.21 163.635L144.212 355.433C121.332 346.036 96.8273 341.225 72.0928 341.272C47.367 341.228 22.8721 346.039 1.22702e-06 355.432V163.635C-6.75544e-05 148.672 -0.000264585 141.176 0.907228 133.838C1.9704 125.151 3.96729 116.679 6.89746 108.424C9.37394 101.461 12.7197 94.7694 19.4229 81.376L54.7041 10.7754C56.3152 7.53902 58.7966 4.81459 61.8701 2.91113C64.9438 1.00775 68.4882 7.8709e-05 72.1035 0Z" fill="url(#paint0_linear_2110_4)"/>
+<path d="M142.279 384.923C120.737 374.536 97.1497 369.097 73.2441 369H70.9326C46.3127 369.105 22.0409 374.874 0 385.868V407.174H144.212L144.211 385.869L142.279 384.923Z" fill="url(#paint1_linear_2110_4)"/>
+<defs>
+<linearGradient id="paint0_linear_2110_4" x1="72.106" y1="0" x2="72.106" y2="355.433" gradientUnits="userSpaceOnUse">
+<stop class="ic-s1" stop-color="#303030"/>
+<stop class="ic-s2" offset="1" stop-color="#272727"/>
+</linearGradient>
+<linearGradient id="paint1_linear_2110_4" x1="72.106" y1="369" x2="72.106" y2="407.174" gradientUnits="userSpaceOnUse">
+<stop class="ic-s1" stop-color="#303030"/>
+<stop class="ic-s2" offset="1" stop-color="#272727"/>
+</linearGradient>
+</defs>
+</svg>
+    </div>
     <h2>Gerimo Notes</h2>
-    <div class="product-tag">Android</div>
+    <span class="feature-label">Android</span>
     <p class="lead">A fast, flexible app for handwritten notes, sketches and PDF annotation – with layers, pages and a toolbar you can shape to your workflow.</p>
     <ul class="product-points">
       <li>Pens, highlighters, shapes and automatic shape recognition</li>
